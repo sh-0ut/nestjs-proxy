@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { proxyUrl } from './proxy.config';
 
 @Injectable()
 export class ProxyService {
@@ -27,14 +28,11 @@ export class ProxyService {
       $('[href], [src]').each((_, element) => {
         const href = $(element).attr('href');
         const src = $(element).attr('src');
-        if (href && href.includes('https://docs.nestjs.com/')) {
-          $(element).attr(
-            'href',
-            href.replace('https://docs.nestjs.com/', '/'),
-          );
+        if (href && href.includes(proxyUrl)) {
+          $(element).attr('href', href.replace(proxyUrl, '/'));
         }
-        if (src && src.includes('https://docs.nestjs.com/')) {
-          $(element).attr('src', src.replace('https://docs.nestjs.com/', '/'));
+        if (src && src.includes(proxyUrl)) {
+          $(element).attr('src', src.replace(proxyUrl, '/'));
         }
       });
 
@@ -44,21 +42,21 @@ export class ProxyService {
               document.querySelectorAll('a[href], link[href], script[src], img[src]').forEach(function(element) {
                 if (element.hasAttribute('href')) {
                   var href = element.getAttribute('href');
-                  if (href.includes('https://docs.nestjs.com/')) {
-                    element.setAttribute('href', href.replace('https://docs.nestjs.com/', '/'));
+                  if (href.includes('${proxyUrl}')) {
+                    element.setAttribute('href', href.replace('${proxyUrl}', '/'));
                   }
                 }
                 if (element.hasAttribute('src')) {
                   var src = element.getAttribute('src');
-                  if (src.includes('https://docs.nestjs.com/')) {
-                    element.setAttribute('src', src.replace('https://docs.nestjs.com/', '/'));
+                  if (src.includes('${proxyUrl}')) {
+                    element.setAttribute('src', src.replace('${proxyUrl}', '/'));
                   }
                 }
               });
             }
 
             function updateTextNodes() {
-            const regex = /\\b(\\w{6})\\b/g
+            const regex = /\\b(\\w{6})(?!™)\\b/g
               document.querySelectorAll('body *:not(script)').forEach(function(element) {
                 element.childNodes.forEach(function(node) {
                   if (node.nodeType === Node.TEXT_NODE) {

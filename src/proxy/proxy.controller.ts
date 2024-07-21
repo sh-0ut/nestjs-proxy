@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Res, Req } from '@nestjs/common';
 import { ProxyService } from './proxy.service';
 import { Response, Request } from 'express';
+import { proxyUrl } from './proxy.config';
 
 @Controller('')
 export class ProxyController {
@@ -8,7 +9,7 @@ export class ProxyController {
 
   @Get('*')
   async proxy(@Req() req: Request, @Param() params, @Res() res: Response) {
-    const url = `https://docs.nestjs.com/${params[0]}`;
+    const url = `${proxyUrl}${params[0]}`;
     try {
       const { data, contentType } = await this.proxyService.fetchAndModify(url);
 
