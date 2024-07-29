@@ -3,10 +3,13 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { proxyUrl } from './proxy.config';
 
+const regex =
+  /(?<![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])([A-Za-zА-Яа-яЁёЇїІіЄєҐґ]{6})(?!™)(?![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])/g;
+
 @Injectable()
 export class ProxyService {
   async fetchAndModify(
-    url: string,
+    url: string
   ): Promise<{ data: any; contentType: string }> {
     const response = await axios.get(url, { responseType: 'arraybuffer' });
     const contentType = response.headers['content-type'];
@@ -20,7 +23,7 @@ export class ProxyService {
           .filter((_, node) => node.nodeType === 3) // Node.TEXT_NODE
           .each((_, textNode) => {
             const text = $(textNode).text();
-            const modifiedText = text.replace(/\b(\w{6})\b/g, '$1™');
+            const modifiedText = text.replace(regex, '$1™');
             $(textNode).replaceWith(modifiedText);
           });
       });
@@ -56,10 +59,10 @@ export class ProxyService {
             }
 
             function updateTextNodes() {
-            const regex = /\\b(\\w{6})(?!™)\\b/g
+            const regex = /(?<![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])([A-Za-zА-Яа-яЁёЇїІіЄєҐґ]{6})(?!™)(?![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])/g
               document.querySelectorAll('body *:not(script)').forEach(function(element) {
                 element.childNodes.forEach(function(node) {
-                  if (node.nodeType === Node.TEXT_NODE) {
+                  if (node.nodeType === Node.TEXT_NODE && node.nodeValue.length == 6) {
                     node.nodeValue = node.nodeValue.replace(regex, '$1™');
                   }
                 });
