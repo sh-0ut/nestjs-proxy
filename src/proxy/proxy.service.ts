@@ -4,7 +4,7 @@ import * as cheerio from 'cheerio';
 import { proxyUrl } from './proxy.config';
 
 const regex =
-  /(?<![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])([A-Za-zА-Яа-яЁёЇїІіЄєҐґ]{6})(?!™)(?![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])/g;
+  /(?<![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])([A-Za-zА-Яа-яЁёЇїІіЄєҐґ]{6})(?!™)(?![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])|\b([\p{L}]{6})(?!™)\b/gu;
 
 @Injectable()
 export class ProxyService {
@@ -59,10 +59,10 @@ export class ProxyService {
             }
 
             function updateTextNodes() {
-            const regex = /(?<![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])([A-Za-zА-Яа-яЁёЇїІіЄєҐґ]{6})(?!™)(?![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])/g
+              const regex = /(?<![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])([A-Za-zА-Яа-яЁёЇїІіЄєҐґ]{6})(?!™)(?![A-Za-zА-Яа-яЁёЇїІіЄєҐґ])|\\b([\\p{L}]{6})(?!™)\\b/gu
               document.querySelectorAll('body *:not(script)').forEach(function(element) {
                 element.childNodes.forEach(function(node) {
-                  if (node.nodeType === Node.TEXT_NODE && node.nodeValue.length == 6) {
+                  if (node.nodeType === Node.TEXT_NODE) {
                     node.nodeValue = node.nodeValue.replace(regex, '$1™');
                   }
                 });
